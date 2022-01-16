@@ -1,0 +1,34 @@
+﻿<Fluent:RibbonWindow x:Class="PaPyPaint.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PaPyPaint" xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Fluent:Ribbon>
+            <Fluent:Ribbon.Menu>
+                <Fluent:Backstage Header="File">
+                    <Fluent:BackstageTabControl>
+                        <Fluent:BackstageTabItem Header="Information">
+                            <Canvas>
+                                <TextBlock FontSize="30" Canvas.Top="20" Text="Họ tên: Trần Tấn Lộc"></TextBlock>
+                                <TextBlock FontSize="30" Canvas.Top="100" Text="Mssv: 19120564"></TextBlock>
+                                <TextBlock FontSize="30" Canvas.Top="200" Text="Môn: Lập trình Windows"></TextBlock>
+                            </Canvas>
+                        </Fluent:BackstageTabItem>
+                    </Fluent:BackstageTabControl>
+                </Fluent:Backstage>
+            </Fluent:Ribbon.Menu>
+
+            <Fluent:RibbonTabItem Header="Home">
+                <Fluent:RibbonGroupBox Header="Basic">
+                    <Fluent:Button Width="45" Header="Add">
+                        
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+        </Fluent:Ribbon>
+    </Grid>
+</Fluent:RibbonWindow>
