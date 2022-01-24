@@ -4,12 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PaPyPaint" xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
+                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="125"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Fluent:Ribbon>
             <Fluent:Ribbon.Menu>
-                <Fluent:Backstage Header="File">
+                <Fluent:Backstage Header="Introduce">
                     <Fluent:BackstageTabControl>
                         <Fluent:BackstageTabItem Header="Information">
                             <Canvas>
@@ -23,12 +28,58 @@
             </Fluent:Ribbon.Menu>
 
             <Fluent:RibbonTabItem Header="Home">
-                <Fluent:RibbonGroupBox Header="Basic">
-                    <Fluent:Button Width="45" Header="Add">
-                        
+                <Fluent:RibbonGroupBox Header="File">
+                    <Fluent:Button Width="45" Icon="Images/save.png" Header="Save" Click="Save_Click" >
+                        <Fluent:Button.LargeIcon>
+                            <Image Source="Images/save.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
+                        </Fluent:Button.LargeIcon>
                     </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+
+                <Fluent:RibbonGroupBox Header="Shape" x:Name="prototypesStackPanel">
+                    <!--<Fluent:Button Icon="Images/save.png" Header="Save" BorderBrush="DarkSlateGray" BorderThickness="2" Padding="6">
+                        <Fluent:Button.LargeIcon>
+                            <Image Source="Images/save.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
+                        </Fluent:Button.LargeIcon>
+                    </Fluent:Button>-->
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="Preview" x:Name="prototypesStackPanel2">
+                    <Grid Width="70">
+                        <Canvas x:Name="PreviewCanvas" Background="White">
+
+                        </Canvas>
+                        <Border Background="Transparent" MouseDown="canvas_MouseDown2" 
+                                MouseMove="canvas_MouseMove2" 
+                                MouseUp="canvas_MouseUp2">
+                        </Border>
+                    </Grid>
+                </Fluent:RibbonGroupBox>
+                
+                <Fluent:RibbonGroupBox Header="Thickness" >
+               
+                    <ComboBox x:Name="thickness" Width="50"/>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="Color" >
+                    <xctk:ColorCanvas x:Name="colorPicker"  SelectedColorChanged="_colorPicker_SelectedColorChanged"/>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>
+
+        <DockPanel Grid.Row="1" LastChildFill="True">
+            <!--<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Height="40" Name="prototypesStackPanel">
+            </StackPanel>-->
+            <Grid>
+                <Canvas x:Name="canvas" Background="White">
+
+                </Canvas>
+                <Border Background="Transparent" MouseDown="canvas_MouseDown" 
+                MouseMove="canvas_MouseMove" 
+                MouseUp="canvas_MouseUp">
+
+                </Border>
+            </Grid>
+
+        </DockPanel>
+
     </Grid>
 </Fluent:RibbonWindow>
