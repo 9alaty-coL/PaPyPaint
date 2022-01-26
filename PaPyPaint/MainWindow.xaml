@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PaPyPaint" xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
                      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" Closing="RibbonWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="125"/>
@@ -34,9 +34,32 @@
                             <Image Source="Images/save.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
                         </Fluent:Button.LargeIcon>
                     </Fluent:Button>
+                    <Fluent:Button Width="45" Icon="Images/save.png" Header="Load" Click="Load_Click" >
+                        <Fluent:Button.LargeIcon>
+                            <Image Source="Images/save.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
+                        </Fluent:Button.LargeIcon>
+                    </Fluent:Button>
                 </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox Header="Shape" x:Name="prototypesStackPanel">
+                <Fluent:RibbonGroupBox Header="Tools" x:Name="Tools">
+                    <Fluent:Button Icon="Images/clear.png" Height="80" Header="Clear all" Click="ClearAll_Click"  Padding="6">
+                        <Fluent:Button.LargeIcon>
+                            <Image Source="Images/clear.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
+                        </Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Icon="Images/undo.jpg" Header="Undo" Padding="6" Click="Undo_Click">
+                        <Fluent:Button.LargeIcon>
+                            <Image Source="Images/undo.jpg" RenderOptions.BitmapScalingMode="HighQuality"></Image>
+                        </Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Icon="Images/redo.png" Header="Redo" Padding="6" Click="Redo_Click">
+                        <Fluent:Button.LargeIcon>
+                            <Image Source="Images/redo.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
+                        </Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+
+                <Fluent:RibbonGroupBox Header="Shapes" x:Name="prototypesStackPanel">
                     <!--<Fluent:Button Icon="Images/save.png" Header="Save" BorderBrush="DarkSlateGray" BorderThickness="2" Padding="6">
                         <Fluent:Button.LargeIcon>
                             <Image Source="Images/save.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
@@ -57,9 +80,9 @@
                 
                 <Fluent:RibbonGroupBox Header="Thickness" >
                
-                    <ComboBox x:Name="thickness" Width="50"/>
+                    <ComboBox x:Name="thickness" Width="50" SelectionChanged="thickness_SelectionChanged"/>
                 </Fluent:RibbonGroupBox>
-                <Fluent:RibbonGroupBox Header="Color" >
+                <Fluent:RibbonGroupBox Header="Colors" >
                     <xctk:ColorCanvas x:Name="colorPicker"  SelectedColorChanged="_colorPicker_SelectedColorChanged"/>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>

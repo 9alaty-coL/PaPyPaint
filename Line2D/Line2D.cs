@@ -47,5 +47,14 @@ namespace Line2D
         {
             return new Line2D() { color = cl ,thickness= t};
         }
+
+        public Point2D GetStart()
+        {
+            return _start;
+        }
+        public Point2D GetEnd()
+        {
+            return _end;
+        }
     }
 }

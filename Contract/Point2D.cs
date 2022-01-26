@@ -49,5 +49,21 @@ namespace Contract
         {
             return new Point2D() { color = cl , thickness=t};
         }
+        public double GetX()
+        {
+            return X;
+        }
+        public double GetY()
+        {
+            return Y;
+        }
+        public Point2D GetStart()
+        {
+            return this;
+        }
+        public Point2D GetEnd()
+        {
+            return this;
+        }
     }
 }

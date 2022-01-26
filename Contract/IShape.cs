@@ -18,5 +18,7 @@ namespace Contract
 
         UIElement Draw();
         IShape Clone(Color cl, double thickness);
+        Point2D GetStart();
+        Point2D GetEnd();
     }
 }

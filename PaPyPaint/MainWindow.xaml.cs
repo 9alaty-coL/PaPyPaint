@@ -1,8 +1,11 @@
 ﻿using Contract;
 using Fluent;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -33,16 +36,18 @@ namespace PaPyPaint
         //Defaut
         bool _isDrawing = false;
         List<IShape> _shapes = new List<IShape>();
+        List<IShape> _trash = new List<IShape>();
         IShape _preview;
         string _selectedShapeName = "";
         Dictionary<string, IShape> _prototypes =
             new Dictionary<string, IShape>();
 
-        Color color = Colors.Black;
+        System.Windows.Media.Color color = Colors.Black;
 
 
         //Thickness
         BindingList<double> Thickness = new BindingList<double>();
+        public string imgPath;
 
         private void canvas_MouseDown(object sender,
             MouseButtonEventArgs e)
@@ -52,16 +57,16 @@ namespace PaPyPaint
 
             _isDrawing = true;
 
-            Point pos = e.GetPosition(canvas);
+            System.Windows.Point pos = e.GetPosition(canvas);
 
             _preview.HandleStart(pos.X, pos.Y);
         }
 
-        private void canvas_MouseMove(object sender, MouseEventArgs e)
+        private void canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (_isDrawing)
             {
-                Point pos = e.GetPosition(canvas);
+                System.Windows.Point pos = e.GetPosition(canvas);
                 _preview.HandleEnd(pos.X, pos.Y);
 
                 // Xoá hết các hình vẽ cũ
@@ -86,7 +91,7 @@ namespace PaPyPaint
             _isDrawing = false;
 
             // Thêm đối tượng cuối cùng vào mảng quản lí
-            Point pos = e.GetPosition(canvas);
+            System.Windows.Point pos = e.GetPosition(canvas);
             _preview.HandleEnd(pos.X, pos.Y);
             _shapes.Add(_preview);
 
@@ -163,11 +168,52 @@ namespace PaPyPaint
 
             _selectedShapeName = _prototypes.First().Value.Name;
             _preview = _prototypes[_selectedShapeName].Clone(color, Thickness[thickness.SelectedIndex]);
+
+
+            // Khoi phuc cac shape da ve truoc do
+            using (StreamReader readtext = new StreamReader("data.txt"))
+            {
+                if (!File.Exists("data.txt"))
+                {
+                    return;
+                }
+                try
+                {
+                    while (!readtext.EndOfStream)
+                    {
+                        string readText = readtext.ReadLine();
+                        string[] data = readText.Split(' ');
+                        IShape restored = _prototypes[data[0]].Clone((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(data[6]),
+                            Double.Parse(data[5]));
+                        restored.HandleStart(Double.Parse(data[1]), Double.Parse(data[2]));
+                        restored.HandleEnd(Double.Parse(data[3]), Double.Parse(data[4]));
+
+                        _shapes.Add(restored);
+                        foreach (var shape in _shapes)
+                        {
+                            var element = shape.Draw();
+                            canvas.Children.Add(element);
+                        }
+                    }
+
+                }
+                catch
+                {
+                    MessageBox.Show("xxx");
+                }
+            }
+
         }
 
         private void prototypeButton_Click(object sender, RoutedEventArgs e)
         {
             _selectedShapeName = (sender as Fluent.Button).Tag as string;
+
+            PreviewCanvas.Children.Clear();
+            IShape PV = _prototypes[_selectedShapeName].Clone(color, Thickness[thickness.SelectedIndex]);
+            PV.HandleStart(15, 15);
+            PV.HandleEnd(60, 60);
+            PreviewCanvas.Children.Add(PV.Draw());
 
             _preview = _prototypes[_selectedShapeName];
         }
@@ -182,7 +228,7 @@ namespace PaPyPaint
 
         }
 
-        private void canvas_MouseMove2(object sender, MouseEventArgs e)
+        private void canvas_MouseMove2(object sender, System.Windows.Input.MouseEventArgs e)
         {
 
         }
@@ -199,24 +245,164 @@ namespace PaPyPaint
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            RenderTargetBitmap rtb = new RenderTargetBitmap((int)canvas.RenderSize.Width,
-            (int)canvas.RenderSize.Height, 96d, 96d, System.Windows.Media.PixelFormats.Default);
-            rtb.Render(canvas);
+            //string folderPath = "";
+            //FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
+            //if (folderBrowserDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //{
+            //    folderPath = folderBrowserDialog1.SelectedPath;
+            //    RenderTargetBitmap rtb = new RenderTargetBitmap((int)canvas.RenderSize.Width,
+            //    (int)canvas.RenderSize.Height, 96d, 96d, System.Windows.Media.PixelFormats.Default);
+            //    rtb.Render(canvas);
 
-            var crop = new CroppedBitmap(rtb, new Int32Rect(0, 0, (int)canvas.ActualWidth, (int)canvas.ActualHeight));
+            //    var crop = new CroppedBitmap(rtb, new Int32Rect(0, 0, (int)canvas.ActualWidth, (int)canvas.ActualHeight));
 
-            BitmapEncoder pngEncoder = new PngBitmapEncoder();
-            pngEncoder.Frames.Add(BitmapFrame.Create(crop));
+            //    BitmapEncoder pngEncoder = new PngBitmapEncoder();
+            //    pngEncoder.Frames.Add(BitmapFrame.Create(crop));
 
-            using (var fs = System.IO.File.OpenWrite("logo.png"))
+            //    using (var fs = System.IO.File.OpenWrite(folderPath))
+            //    {
+            //        pngEncoder.Save(fs);
+            //    }
+            //}
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "Image files (*.png)|*.png|All files (*.*)|*.*";
+            if (dialog.ShowDialog() == true)
             {
-                pngEncoder.Save(fs);
+                RenderTargetBitmap rtb = new RenderTargetBitmap((int)canvas.RenderSize.Width,
+                (int)canvas.RenderSize.Height, 96d, 96d, System.Windows.Media.PixelFormats.Default);
+                rtb.Render(canvas);
+
+                //var crop = new CroppedBitmap(rtb, new Int32Rect(0, 0, (int)canvas.ActualWidth, (int)canvas.ActualHeight));
+                MemoryStream stream = new MemoryStream();
+                BitmapEncoder encoder = new BmpBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(rtb));
+                encoder.Save(stream);
+
+                Bitmap bitmap = new Bitmap(stream);
+                //BitmapEncoder pngEncoder = new PngBitmapEncoder();
+
+                //int width = Convert.ToInt32(canvas.Width);
+                //int height = Convert.ToInt32(canvas.Height);
+                //Bitmap bmp = new Bitmap(width, height);
+
+                //canvas.DrawToBitmap(bmp, new Rectangle(0, 0, width, height));
+                bitmap.Save(dialog.FileName, ImageFormat.Png);
+                MessageBox.Show("Save successfully!");
+            }
+
+        }
+
+        private void _colorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
+        {
+            color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(colorPicker.SelectedColor.ToString());
+
+            PreviewCanvas.Children.Clear();
+            IShape PV = _prototypes[_selectedShapeName].Clone(color, Thickness[thickness.SelectedIndex]);
+            PV.HandleStart(15, 15);
+            PV.HandleEnd(60, 60);
+            PreviewCanvas.Children.Add(PV.Draw());
+        }
+
+        private void Load_Click(object sender, RoutedEventArgs e)
+        {
+            //Browse PNG IMAGE
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.Filter = "Image files (*.png)|*.png|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                canvas.Children.Clear();
+                imgPath = openFileDialog.FileName;
+                ImageBrush brush = new ImageBrush();
+                brush.ImageSource = new BitmapImage(new Uri(imgPath, UriKind.Relative));
+                canvas.Background = brush;
+                _shapes.Clear();
+            }
+
+            //Load PNG to Canvas
+            //canvas = new Canvas();
+            //BitmapImage bm = new BitmapImage(new Uri(imgPath, UriKind.Absolute));
+            //Image img = new Image();
+            //img.Source = bm;
+            //img.Width = bm.Width;
+            //img.Height = bm.Height;
+            //Canvas.SetLeft(img, 0);
+            //Canvas.SetRight(img, 0);
+            //canvas.Children.Add(img);
+            
+        }
+
+        private void thickness_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                PreviewCanvas.Children.Clear();
+                IShape PV = _prototypes[_selectedShapeName].Clone(color, Thickness[thickness.SelectedIndex]);
+                PV.HandleStart(15, 15);
+                PV.HandleEnd(60, 60);
+                PreviewCanvas.Children.Add(PV.Draw());
+            }
+            catch
+            {
+
+            }
+
+        }
+
+        private void RibbonWindow_Closing(object sender, CancelEventArgs e)
+        {
+            using (StreamWriter writetext = new StreamWriter("data.txt"))
+            {
+                foreach(var shape in _shapes)
+                {
+                    writetext.WriteLine(shape.Name + " " + shape.GetStart().GetX() + " " + shape.GetStart().GetY() + " " + 
+                        shape.GetEnd().GetX() + " " + shape.GetEnd().GetY() + " " + shape.thickness + " " + shape.color);
+                }
             }
         }
 
-        private void _colorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            color = (Color)System.Windows.Media.ColorConverter.ConvertFromString(colorPicker.SelectedColor.ToString());
+
+        }
+
+        private void ClearAll_Click(object sender, RoutedEventArgs e)
+        {
+            _shapes.Clear();
+            canvas.Children.Clear();
+        }
+
+        private void Undo_Click(object sender, RoutedEventArgs e)
+        {
+            if(_shapes.Count() <= 0)
+            {
+                return;
+            }
+            _trash.Add(_shapes[_shapes.Count() - 1]);
+            _shapes.RemoveAt(_shapes.Count() - 1);
+
+            canvas.Children.Clear();
+            foreach (var shape in _shapes)
+            {
+                var element = shape.Draw();
+                canvas.Children.Add(element);
+            }
+        }
+
+        private void Redo_Click(object sender, RoutedEventArgs e)
+        {
+            if (_trash.Count() <= 0)
+            {
+                return;
+            }
+            _shapes.Add(_trash[_trash.Count() - 1]);
+            _trash.RemoveAt(_trash.Count() - 1);
+
+            canvas.Children.Clear();
+            foreach (var shape in _shapes)
+            {
+                var element = shape.Draw();
+                canvas.Children.Add(element);
+            }
         }
     }
 }

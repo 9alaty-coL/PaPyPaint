@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("arrow.ico")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/clear.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/redo.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/undo.jpg")]
 
 
