@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PaPyPaint" xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
                      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" Closing="RibbonWindow_Closing">
+        Title="PaPyPaint" Height="700" Width="1100" Loaded="Window_Loaded" Closing="RibbonWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="125"/>

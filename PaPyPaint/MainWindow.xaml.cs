@@ -81,8 +81,6 @@ namespace PaPyPaint
 
                 // Vẽ hình preview đè lên
                 canvas.Children.Add(_preview.Draw());
-
-                Title = $"{pos.X} {pos.Y}";
             }
         }
 
@@ -171,12 +169,13 @@ namespace PaPyPaint
 
 
             // Khoi phuc cac shape da ve truoc do
-            using (StreamReader readtext = new StreamReader("data.txt"))
+            if (!File.Exists("./data.txt"))
             {
-                if (!File.Exists("data.txt"))
-                {
-                    return;
-                }
+                return;
+            }
+            using (StreamReader readtext = new StreamReader("./data.txt"))
+            {
+
                 try
                 {
                     while (!readtext.EndOfStream)
@@ -211,8 +210,8 @@ namespace PaPyPaint
 
             PreviewCanvas.Children.Clear();
             IShape PV = _prototypes[_selectedShapeName].Clone(color, Thickness[thickness.SelectedIndex]);
-            PV.HandleStart(15, 15);
-            PV.HandleEnd(60, 60);
+            PV.HandleStart(15, 20);
+            PV.HandleEnd(60, 55);
             PreviewCanvas.Children.Add(PV.Draw());
 
             _preview = _prototypes[_selectedShapeName];
@@ -298,8 +297,8 @@ namespace PaPyPaint
 
             PreviewCanvas.Children.Clear();
             IShape PV = _prototypes[_selectedShapeName].Clone(color, Thickness[thickness.SelectedIndex]);
-            PV.HandleStart(15, 15);
-            PV.HandleEnd(60, 60);
+            PV.HandleStart(15, 20);
+            PV.HandleEnd(60, 55);
             PreviewCanvas.Children.Add(PV.Draw());
         }
 
@@ -337,8 +336,8 @@ namespace PaPyPaint
             {
                 PreviewCanvas.Children.Clear();
                 IShape PV = _prototypes[_selectedShapeName].Clone(color, Thickness[thickness.SelectedIndex]);
-                PV.HandleStart(15, 15);
-                PV.HandleEnd(60, 60);
+                PV.HandleStart(15, 20);
+                PV.HandleEnd(60, 55);
                 PreviewCanvas.Children.Add(PV.Draw());
             }
             catch
@@ -368,6 +367,7 @@ namespace PaPyPaint
         private void ClearAll_Click(object sender, RoutedEventArgs e)
         {
             _shapes.Clear();
+            _trash.Clear();
             canvas.Children.Clear();
         }
 
